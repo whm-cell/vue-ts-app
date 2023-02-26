@@ -17,5 +17,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     //关闭组件命名规则 //在rules中添加自定义规则
     "vue/multi-word-component-names": "off",
+    '@typescript-eslint/no-empty-interface': 'off'
+
   }
 }
