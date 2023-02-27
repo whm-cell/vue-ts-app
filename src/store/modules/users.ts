@@ -13,7 +13,6 @@ const actions: ActionTree<UsersState, State> = {
   // 这里写请求接口
   async login(context: ActionContext<UsersState, State>, payload: any) {
     const { data } = await http.post("/users/login", payload);
-    // context.commit("setToken", data.token);
     return data;
   },
 };
