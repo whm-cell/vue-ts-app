@@ -1,5 +1,8 @@
 import axios from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import store from "@/store";
+import type { StateAll } from "@/store";
+import { ElMessage } from "element-plus";
 
 // 封装axios - ①
 const instance = axios.create({
@@ -14,6 +17,11 @@ const instance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   function (config) {
+    if (config.headers) {
+      // 防止headers为undefined
+      config.headers.authorization =
+        (store.state as StateAll).users.token || "";
+    }
     return config;
   },
   function (error) {
@@ -25,6 +33,13 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   function (response) {
+    if (response.data.errmsg === "token error") {
+      ElMessage.error("登录过期，请重新登录");
+      store.commit("users/clearToken", "");
+      setTimeout(() => {
+        window.location.replace("/login");
+      }, 1000);
+    }
     return response;
   },
   function (error) {

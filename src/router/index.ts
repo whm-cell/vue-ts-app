@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-
+import _ from "lodash";
 // token 从状态管理里面取
 import store from "@/store";
 import type { StateAll } from "@/store";
@@ -107,11 +107,18 @@ router.beforeEach((to, from, next) => {
   // 获取token
   // const token = localStorage.getItem("token");
   const token = (store.state as StateAll).users.token;
+  const infos = (store.state as StateAll).users.infos;
   console.log("token", token);
   // 判断是否有token
-  if (to.meta.auth) {
+  if (to.meta.auth && _.isEmpty(infos)) {
     if (token) {
-      next();
+      store.dispatch("users/infos").then((res) => {
+        if (res.data.errcode === 0) {
+          store.commit("users/updateInfos", res.data.infos);
+          next();
+        }
+      });
+      // next();
     } else {
       next("/login");
     }
