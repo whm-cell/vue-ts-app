@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
+// token 从状态管理里面取
+import store from "@/store";
+import type { StateAll } from "@/store";
+
 // 路由 - ①  通过懒加载的方式引入组件
 const Login = () => import("@/views/Login/Login.vue");
 const Home = () => import("@/views/Home/Home.vue");
@@ -98,5 +102,53 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+router.beforeEach((to, from, next) => {
+  // 获取token
+  // const token = localStorage.getItem("token");
+  const token = (store.state as StateAll).users.token;
+  console.log("token", token);
+  // 判断是否有token
+  if (to.meta.auth) {
+    if (token) {
+      next();
+    } else {
+      next("/login");
+    }
+  } else {
+    // 如果有token，且访问的是登录页，直接跳转到首页
+    if (token && to.path === "/login") {
+      next("/");
+    } else {
+      next();
+    }
+  }
+});
+
+/* router.beforeEach((to, from, next) => {
+  // 1. 获取token
+  const token = localStorage.getItem("token");
+  // 2. 判断是否有token
+  if (token) {
+    // 2.1 判断是否是登录页
+    if (to.path === "/Login") {
+      // 2.1.1 如果是登录页，直接跳转到首页
+      next("/");
+    } else {
+      // 2.1.2 如果不是登录页，直接放行
+      next();
+    }
+  } else {
+    // 2.2 如果没有token
+    // 2.2.1 判断是否是登录页
+    if (to.path === "/Login") {
+      //
+      next();
+    } else {
+      // 2.2.2 如果不是登录页，跳转到登录页
+      next("/Login");
+    }
+  }
+}); */
 
 export default router;
