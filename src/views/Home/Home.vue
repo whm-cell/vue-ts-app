@@ -24,4 +24,21 @@ import HomeMain from "./components/HomeMain.vue";
 import HomeBreadcrumb from "./components/HomeBreadcrumb .vue";
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// 添加阴影
+.el-header {
+  box-shadow: 0 8px 24px -2px rgba(0 0 0 / 5%);
+}
+// 添加阴影
+
+.el-aside {
+  box-shadow: 2px 0 8px 0 rgba(0 0 0 / 5%);
+}
+
+.el-main {
+  background: #f0f2f5;
+  display: flex;
+  // 上下的弹性布局
+  flex-direction: column;
+}
+</style>
