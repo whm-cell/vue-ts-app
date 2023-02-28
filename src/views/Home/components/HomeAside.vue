@@ -35,7 +35,6 @@
 // 让菜单栏的顶到底部
 .el-menu {
   height: calc(100vh - 60px);
-  // border: none;
   padding-top: 30px;
 }
 

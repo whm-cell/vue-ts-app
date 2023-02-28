@@ -1,7 +1,16 @@
 <template>
-  <div></div>
+  <div class="home-main">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script setup lang="ts"></script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.home-main {
+  margin-top: 20px;
+  background: #fff;
+  flex-grow: 1; // 剩余的空间都给它  弹性的自动拉伸
+  position: relative;
+}
+</style>
