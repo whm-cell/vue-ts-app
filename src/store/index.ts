@@ -1,6 +1,9 @@
 // ①引入userStore
 import { createStore, useStore as baseUseStore } from "vuex";
 
+// 引入vuex-persist 持久化①
+import VuexPersistence from "vuex-persist";
+
 // ② 引入store 模块和InjectionKey
 // InjectionKey是一个泛型，泛型的类型是Store
 
@@ -31,6 +34,18 @@ export interface StateAll extends State {
   sign: SignState;
 }
 
+// 引入vuex-persist 持久化②
+const vuexLocal = new VuexPersistence<State>({
+  storage: window.localStorage,
+
+  // ④定义持久化的模块
+  reducer: (state: State) => ({
+    // 将state 转换为StateAll类型
+    // 这里可以点击出state的原因是：  users的类型是UsersState，UsersState中有token，所以可以点击出来
+    users: { token: (state as StateAll).users.token },
+  }),
+});
+
 export const key: InjectionKey<Store<StateAll>> = Symbol();
 
 export function useStore() {
@@ -48,4 +63,6 @@ export default createStore({
     checks,
     sign,
   },
+  // 引入vuex-persist 持久化③使persist插件生效
+  plugins: [vuexLocal.plugin],
 });
