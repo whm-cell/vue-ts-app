@@ -34,7 +34,7 @@ const mutations: MutationTree<UsersState> = {
 };
 const actions: ActionTree<UsersState, State> = {
   // 这里写请求接口
-  async login(context: ActionContext<UsersState, State>, payload: any) {
+  async login(context: ActionContext<UsersState, State>, payload) {
     return await http.post("/users/login", payload);
   },
   infos() {

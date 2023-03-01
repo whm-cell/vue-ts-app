@@ -20,22 +20,38 @@
 
     <el-dropdown>
       <el-space class="home-header-space">
-        <el-avatar
-          src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-        />
-        王海明
+        <el-avatar :src="(head as string)" />
+        {{ name }}
       </el-space>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item>个人中心</el-dropdown-item>
-          <el-dropdown-item>退出</el-dropdown-item>
+          <el-dropdown-item @click="handleLogout">退出</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useStore } from "@/store";
+import { ElMessage } from "element-plus";
+import { computed } from "vue";
+
+const store = useStore();
+// 计算属性 : 当header发生变化时，重新计算
+const head = computed(() => store.state.users.infos.head);
+const name = computed(() => store.state.users.infos.name);
+
+const handleLogout = () => {
+  store.commit("users/clearToken");
+
+  ElMessage.success("退出成功");
+  setTimeout(() => {
+    window.location.replace("/login");
+  }, 100);
+};
+</script>
 
 <style scoped lang="scss">
 .home-header {
