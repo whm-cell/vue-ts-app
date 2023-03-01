@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-menu default-active="1-1" router>
+    <el-menu :default-active="route.fullPath" router>
       <el-sub-menu v-for="item in menus" :key="item.path" :index="item.path">
         <template #title>
           <el-icon><component :is="item.meta?.icon"></component></el-icon>
@@ -21,13 +21,32 @@
 
 <script setup lang="ts">
 import _ from "lodash";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+
+import { useStore } from "@/store";
+import type { RouteRecordName } from "vue-router";
+
+const store = useStore();
+
+// 获取权限数组
+const permission = store.state.users.infos.permission;
+
 const router = useRouter();
+const route = useRoute();
 console.log(router.options.routes);
 // 深拷贝，防止修改原数据
-const menus = _.cloneDeep(router.options.routes).filter(
-  (item) => item.meta?.menu
-);
+const menus = _.cloneDeep(router.options.routes).filter((item) => {
+  item.children = item.children?.filter(
+    (item) =>
+      item.meta?.menu &&
+      (permission as (RouteRecordName | undefined)[]).includes(item.name)
+  );
+
+  return (
+    item.meta?.menu &&
+    (permission as (RouteRecordName | undefined)[]).includes(item.name)
+  );
+});
 </script>
 
 <style scoped lang="scss">

@@ -82,8 +82,8 @@ const testUser: User[] = [
     pass: "huangrong",
   },
   {
-    email: "huangrong@imooc.com",
-    pass: "huangrong",
+    email: "hongqigong@imooc.com",
+    pass: "hongqigong",
   },
 ];
 

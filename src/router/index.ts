@@ -114,6 +114,7 @@ router.beforeEach((to, from, next) => {
     if (token) {
       store.dispatch("users/infos").then((res) => {
         if (res.data.errcode === 0) {
+          //持久化登录后的用户信息
           store.commit("users/updateInfos", res.data.infos);
           next();
         }
