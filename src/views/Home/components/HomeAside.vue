@@ -1,35 +1,34 @@
 <template>
   <div>
-    <el-menu default-active="1">
-      <el-sub-menu index="1">
+    <el-menu default-active="1-1" router>
+      <el-sub-menu v-for="item in menus" :key="item.path" :index="item.path">
         <template #title>
-          <el-icon><location /></el-icon>
-          <span>Navigator One</span>
+          <el-icon><component :is="item.meta?.icon"></component></el-icon>
+          <span>{{ item.meta?.title }}</span>
         </template>
-        <el-menu-item index="1-1">
-          <span>item one</span>
-        </el-menu-item>
-        <el-menu-item index="1-2">
-          <span>item two</span>
-        </el-menu-item>
-      </el-sub-menu>
-      <el-sub-menu index="2-1">
-        <template #title>
-          <el-icon><location /></el-icon>
-          <span>Navigator One</span>
-        </template>
-        <el-menu-item index="2-1">
-          <span>item one</span>
-        </el-menu-item>
-        <el-menu-item index="2-2">
-          <span>item two</span>
+        <el-menu-item
+          v-for="itemChild in item.children"
+          :key="itemChild.path"
+          :index="item.path + itemChild.path"
+        >
+          <el-icon><component :is="itemChild.meta?.icon"></component></el-icon>
+          <span>{{ itemChild.meta?.title }}</span>
         </el-menu-item>
       </el-sub-menu>
     </el-menu>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import _ from "lodash";
+import { useRouter } from "vue-router";
+const router = useRouter();
+console.log(router.options.routes);
+// 深拷贝，防止修改原数据
+const menus = _.cloneDeep(router.options.routes).filter(
+  (item) => item.meta?.menu
+);
+</script>
 
 <style scoped lang="scss">
 // 让菜单栏的顶到底部
