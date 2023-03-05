@@ -49,15 +49,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watchEffect } from "vue";
 // 引入编程式路由
 import { useRouter } from "vue-router";
 import { useStore } from "@/store";
 import { ElMessage } from "element-plus";
-
+import { toZero } from "@/utils/common";
 const store = useStore();
 
 const userid = store.state.users.infos._id;
+// 获取打卡信息
+const signsInfos = computed(() => {
+  return store.state.signs.infos;
+});
 
 const router = useRouter();
 /*  v-model 必须接响应式数据，比如由ref修饰的数据 */
@@ -69,18 +73,12 @@ const month = ref(value.value.getMonth() + 1);
 
 enum DetailKey {
   normal = "正常出勤",
-  absent = "缺勤",
+  absent = "旷工",
   miss = "漏打卡",
   late = "迟到",
   leave = "早退",
-  lateAndEarly = "迟到早退",
+  lateAndEarly = "迟到并早退",
 }
-
-const detailState = reactive({
-  // 断言的意思：告诉ts，这个值是success或者danger
-  type: "success" as "success" | "danger",
-  text: "正常" as "正常" | "异常",
-});
 
 const detailValue = reactive({
   normal: 0,
@@ -89,6 +87,71 @@ const detailValue = reactive({
   late: 0,
   leave: 0,
   lateAndEarly: 0,
+});
+const detailState = reactive({
+  // 断言的意思：告诉ts，这个值是success或者danger
+  type: "success" as "success" | "danger",
+  text: "正常" as "正常" | "异常",
+});
+
+// 触发场景：初始的时候触发及value变化的时候触发
+// 这里的month是变量，当变量变化的时候，就会触发watchEffect
+
+watchEffect((reset) => {
+  // console.log(signsInfos.value);
+  // 实现重置操作。
+  const detailMonth = (signsInfos.value.detail as { [index: string]: unknown })[
+    toZero(month.value)
+  ] as { [index: string]: unknown };
+
+  for (const attr in detailMonth) {
+    switch (detailMonth[attr]) {
+      case DetailKey.normal:
+        detailValue.normal++;
+        break;
+      case DetailKey.absent:
+        detailValue.absent++;
+        break;
+      case DetailKey.miss:
+        detailValue.miss++;
+        break;
+      case DetailKey.late:
+        detailValue.late++;
+        break;
+      case DetailKey.leave:
+        detailValue.leave++;
+        break;
+      case DetailKey.lateAndEarly:
+        detailValue.lateAndEarly++;
+        break;
+    }
+  }
+
+  // 处理考勤状态
+  for (const attr in detailValue) {
+    // if(detailValue[attr as keyof typeof detailValue] > 0) {
+    //   detailState.type = "danger";
+    //   detailState.text = "异常";
+    //   break;
+    // }
+    if (detailValue[attr as keyof typeof detailValue] > 0) {
+      detailState.type = "danger";
+      detailState.text = "异常";
+      break;
+    }
+  }
+
+  // 重新打卡的时候，重置考勤信息
+  reset(() => {
+    // 如果都OK了，这里还需要还原状态信息
+    detailState.type = "success";
+    detailState.text = "正常";
+
+    for (const attr in detailValue) {
+      // const abc = typeof detailValue;
+      detailValue[attr as keyof typeof detailValue] = 0;
+    }
+  });
 });
 
 const handleChange = () => {
@@ -99,17 +162,11 @@ const handleToException = () => {
   router.push("/exception");
 };
 
-// 获取打卡信息
-const signsInfos = computed(() => {
-  return store.state.signs.infos;
-});
-
 const renderDate = (day: string) => {
   return day.split("-")[2] + "日";
 };
 
 const renderTime = (time: string) => {
-  console.log("1111", time);
   const [, month, day] = time.split("-");
 
   const ret = (
