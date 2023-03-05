@@ -14,13 +14,13 @@ import type { InjectionKey } from "vue";
 import users from "./modules/users";
 import news from "./modules/news";
 import checks from "./modules/checks";
-import sign from "./modules/sign";
+import signs from "./modules/signs";
 
 // 引入store模块的接口们
 import type { UsersState } from "./modules/users";
 import type { NewsState } from "./modules/news";
 import type { ChecksState } from "./modules/checks";
-import type { SignState } from "./modules/sign";
+import type { SignState } from "./modules/signs";
 
 // ③ 定义state接口
 export interface State {
@@ -31,7 +31,7 @@ export interface StateAll extends State {
   users: UsersState;
   news: NewsState;
   checks: ChecksState;
-  sign: SignState;
+  signs: SignState;
 }
 
 // 引入vuex-persist 持久化②
@@ -61,7 +61,7 @@ export default createStore({
     users,
     news,
     checks,
-    sign,
+    signs,
   },
   // 引入vuex-persist 持久化③使persist插件生效
   plugins: [vuexLocal.plugin],
