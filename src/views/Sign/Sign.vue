@@ -38,14 +38,21 @@
           </el-select>
         </el-space>
       </template>
+      <template #dateCell="{ data }">
+        <div>{{ renderDate(data.day) }}</div>
+        <div class="show-time">{{ renderTime(data.day) }}</div>
+      </template>
     </el-calendar>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 // 引入编程式路由
 import { useRouter } from "vue-router";
+import { useStore } from "@/store";
+
+const store = useStore();
 
 const router = useRouter();
 /*  v-model 必须接响应式数据，比如由ref修饰的数据 */
@@ -86,6 +93,32 @@ const handleChange = () => {
 const handleToException = () => {
   router.push("/exception");
 };
+
+// 获取打卡信息
+const signsInfos = computed(() => {
+  return store.state.signs.infos;
+});
+
+const renderDate = (day: string) => {
+  return day.split("-")[2] + "日";
+};
+
+const renderTime = (time: string) => {
+  console.log("1111", time);
+  const [, month, day] = time.split("-");
+
+  const ret = (
+    (signsInfos.value.time as { [index: string]: unknown })[month] as {
+      [index: string]: unknown;
+    }
+  )[day];
+
+  if (Array.isArray(ret)) {
+    return ret.join("-");
+  }
+
+  return ret;
+};
 </script>
 
 <style scoped lang="scss">
@@ -94,5 +127,13 @@ const handleToException = () => {
 }
 .el-select {
   width: 80px;
+}
+
+.show-time {
+  text-align: center;
+  line-height: 40px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: auto;
 }
 </style>
