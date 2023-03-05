@@ -23,7 +23,9 @@
 
     <el-calendar v-model="value">
       <template #header>
-        <el-button type="primary" size="small">在线签到</el-button>
+        <el-button type="primary" @click="handlePutTime" size="small"
+          >在线签到</el-button
+        >
         <el-space>
           <el-button plain>2022年</el-button>
           <el-select v-model="month" @change="handleChange" size="small">
@@ -51,8 +53,11 @@ import { ref, reactive, computed } from "vue";
 // 引入编程式路由
 import { useRouter } from "vue-router";
 import { useStore } from "@/store";
+import { ElMessage } from "element-plus";
 
 const store = useStore();
+
+const userid = store.state.users.infos._id;
 
 const router = useRouter();
 /*  v-model 必须接响应式数据，比如由ref修饰的数据 */
@@ -118,6 +123,16 @@ const renderTime = (time: string) => {
   }
 
   return ret;
+};
+
+const handlePutTime = () => {
+  store.dispatch("signs/putTime", { userid: userid }).then((res) => {
+    if (res.data.errcode === 0) {
+      store.commit("signs/updateInfos", res.data.infos);
+      ElMessage.success("打卡成功");
+    }
+    console.log("res", res);
+  });
 };
 </script>
 
