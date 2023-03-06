@@ -129,11 +129,6 @@ watchEffect((reset) => {
 
   // 处理考勤状态
   for (const attr in detailValue) {
-    // if(detailValue[attr as keyof typeof detailValue] > 0) {
-    //   detailState.type = "danger";
-    //   detailState.text = "异常";
-    //   break;
-    // }
     if (detailValue[attr as keyof typeof detailValue] > 0) {
       detailState.type = "danger";
       detailState.text = "异常";
@@ -159,7 +154,13 @@ const handleChange = () => {
 };
 
 const handleToException = () => {
-  router.push("/exception");
+  router.push({
+    path: "/exception",
+    query: {
+      // 在请求上跟着参数
+      month: month.value,
+    },
+  });
 };
 
 const renderDate = (day: string) => {
@@ -188,7 +189,6 @@ const handlePutTime = () => {
       store.commit("signs/updateInfos", res.data.infos);
       ElMessage.success("打卡成功");
     }
-    console.log("res", res);
   });
 };
 </script>

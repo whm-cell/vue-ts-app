@@ -50,7 +50,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
 
 const date = new Date();
 
@@ -59,7 +63,18 @@ const year = date.getFullYear();
 //   return date.getMonth() + 1;
 // })
 
-const month = ref(date.getMonth() + 1);
+//Number(route.query.month) 没有值的话，会选择后面的！
+const month = ref(Number(route.query.month) || date.getMonth() + 1);
+
+/*  为了让month变化时，数据传递到当前的url上！ */
+watch(month, () => {
+  // router 的  push方法，可以传递一个对象，对象中的query属性，就是传递的数据
+  router.push({
+    query: {
+      month: month.value,
+    },
+  });
+});
 </script>
 
 <style scoped lang="scss">
