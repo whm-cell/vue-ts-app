@@ -112,6 +112,24 @@ const routes: Array<RouteRecordRaw> = [
           icon: "document-add",
           auth: true,
         },
+        // 添加独享守卫(路由独享守卫: 在路由配置中配置的守卫)
+        beforeEnter: (to, from, next) => {
+          const usersInfos = (store.state as StateAll).users.infos;
+          const applyList = (store.state as StateAll).checks.applyList;
+          if (_.isEmpty(applyList)) {
+            store
+              .dispatch("checks/getApply", { applicatid: usersInfos._id })
+              .then((res) => {
+                if (res.data.errcode === 0) {
+                  //持久化登录后的用户信息
+                  store.commit("checks/updateApply", res.data.rets);
+                  next();
+                }
+              });
+          } else {
+            next();
+          }
+        },
       },
       {
         path: "check",
